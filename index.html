@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>PARA MI VIDA ENTERA</title>
+    <link rel="icon" type="image/x-icon" href="Love_files/icon.png">
+    <meta name="language" content="es-ES">
+    <link type="text/css" rel="stylesheet" href="./Love_files/default.css">
+    
+    <script type="text/javascript" src="./Love_files/jquery.min.js"></script>
+    <script type="text/javascript" src="./Love_files/jscex.min.js"></script>
+    <script type="text/javascript" src="./Love_files/jscex-parser.js"></script>
+    <script type="text/javascript" src="./Love_files/jscex-jit.js"></script>
+    <script type="text/javascript" src="./Love_files/jscex-builderbase.min.js"></script>
+    <script type="text/javascript" src="./Love_files/jscex-async.min.js"></script>
+    <script type="text/javascript" src="./Love_files/jscex-async-powerpack.min.js"></script>
+    <script type="text/javascript" src="./Love_files/functions.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./Love_files/love.js" charset="utf-8"></script>
+
+    <style>
+        #valentine-btn-container {
+            margin-top: 20px; 
+            text-align: center; 
+            display: none; 
+            position: relative;
+            z-index: 1000;
+            height: 60px;
+        }
+
+        #btn-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 220px;
+            height: 55px;
+            cursor: default; 
+            transition: transform 0.2s;
+        }
+
+        #btn-text-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #000000; 
+            font-family: '微软雅黑', sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 2;
+            text-shadow: 0px 0px 5px #ffffff, 0px 0px 10px #ffffff;
+            pointer-events: none; 
+        }
+
+        #btn-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 1;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.2); 
+            border: 1px solid rgba(255, 182, 193, 0.5);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .flying-heart-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 20px;
+            color: red;
+            transition: transform 1s ease-in, opacity 1s;
+        }
+
+        #btn-wrapper.unlocked {
+            cursor: pointer;
+            animation: latido 1.2s infinite;
+            border-color: #ff0000;
+        }
+        
+        #btn-wrapper.unlocked #btn-text-overlay {
+            color: #000000; 
+            text-shadow: 0px 0px 5px #ffffff, 0px 0px 10px #ffffff;
+            font-size: 18px;
+        }
+
+        @keyframes latido {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #letter-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+            backdrop-filter: blur(5px);
+        }
+
+        #letter-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 85%;
+            text-align: left;
+            position: relative;
+            border: 4px solid #ff2d2d;
+            background-image: radial-gradient(#ffe6e6 10%, transparent 10%);
+            background-size: 20px 20px;
+            max-height: 70vh; 
+            overflow-y: auto; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        #letter-content::-webkit-scrollbar {
+            width: 10px;
+        }
+        #letter-content::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 10px;
+        }
+        #letter-content::-webkit-scrollbar-thumb {
+            background: #ff2d2d; 
+            border-radius: 10px;
+        }
+        
+        #secret-message-area {
+            font-size: 1.1em;
+            color: #333;
+            line-height: 1.6;
+            white-space: pre-line;
+            font-family: 'Verdana', sans-serif;
+        }
+
+        .close-btn {
+            position: absolute; top: 10px; right: 20px;
+            font-size: 35px; cursor: pointer; color: #ff2d2d;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div id="error">Tu navegador no es compatible. Usa Chrome.</div>
+
+        <div id="wrap">
+            <div id="text">
+                <div id="code">
+                    <span class="say">Para el amor de mi vida:</span><br><br>
+                    <span class="say">Si pudiera elegir un lugar seguro, seria a tu lado.</span><br><br>
+                    <span class="say">Cuanto mas tiempo estoy contigo mas te amo.</span><br><br>
+                </div>
+                
+                <div id="valentine-btn-container">
+                    <div id="btn-wrapper" onclick="intentarAbrir()">
+                        <canvas id="btn-canvas" width="220" height="55"></canvas>
+                        <div id="btn-text-overlay">
+                            <span id="countdown">Calculando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="clock-box">
+                <a>Llevamos</a>
+                <a>todo este</a> tiempo
+                <div id="clock"></div>
+            </div>
+
+            <canvas id="canvas" width="1100" height="680"></canvas>
+        </div>
+    </div>
+
+    <div id="letter-overlay">
+        <div id="letter-content">
+            <span class="close-btn" onclick="document.getElementById('letter-overlay').style.display='none'">×</span>
+            <h2 style="color: #ff2d2d; margin-bottom: 20px; text-align: center;">💌 PARA MI AMOR 💌</h2>
+            <p id="secret-message-area"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+        var contenidoCarta = "RmVsaXogU2FuIFZhbGVudGluIGFtb3IuIEF1bnF1ZSBzb2xvIGxsZXZhbW9zIHVuIHBhciBkZSBzZW1hbmFzLCBzaWVudG8gcXVlIGVsIHRpZW1wbyBlcyBkaWZlcmVudGUgZGVzZGUgcXVlIGVzdGFzIGVuIG1pIHZpZGEuIFRvZGF2aWEgdGVuZ28gbXV5IHByZXNlbnRlIGVzZSAyNyBkZSBlbmVybywgcG9ycXVlIGVzZSBkaWEgbm8gc29sbyB0ZSBwZWRpIHF1ZSBmdWVyYXMgbWkgbm92aWEgc2lubyBxdWUgZGVjaWRpIHF1ZSBxdWVyaWEgaGFjZXIgbGFzIGNvc2FzIGJpZW4gY29udGlnbyB5IGVtcGV6YXIgYWxnbyByZWFsLiBFc2EgdGFyZGUgZnVlIGVsIGNvbWllbnpvIGRlIGFsZ28gcXVlIG1lIHRpZW5lIG11eSBpbHVzaW9uYWRvIHkgbWUgZ3VzdGEgbXVjaG8gcmVjb3JkYXIgY29tbyBub3MgbWlyYWJhbW9zLCBwb3JxdWUgc2Ugc2VudGlhIHF1ZSBhbWJvcyBxdWVyaWFtb3MgbG8gbWlzbW8gYXVucXVlIGVzdHV2aWVyYW1vcyB1biBwb2NvIG5lcnZpb3NvcyBhbCBwcmluY2lwaW8geSBoYWNpYW1vcyBhbGd1bmFzIGNhZ2FkYXMuCk1lIHBvbmdvIGEgcGVuc2FyIGVuIGxvIHJhcGlkbyBxdWUgaGFuIHBhc2FkbyBlc3RvcyBkaWFzIHkgZW4gY29tbyBlbiB0YW4gcG9jbyB0aWVtcG8sIHRlIGhhcyB2dWVsdG8gbGEgcGVyc29uYSBxdWUgYnVzY28gZW4gbWkgbW92aWwgYXBlbmFzIG1lIGRlc3BpZXJ0byBwb3IgbGEgbWHDsWFuYS4gTWUgZW5jYW50YSBlc3RhIHNlbnNhY3lvbiBkZSBlc3RhciBlbXBlemFuZG8gdW5hIHJlbGFjaW9uIGNvbnRpZ28geSBkaXNmcnV0byBjYWRhIG1lbnNhamUgcXVlIG1lIGhhY2Ugc29ucmVpciBjb21vIHVuIOKAnHRvbnRv4oCdIGZyZW50ZSBhIGxhIHBhbnRhbGxhLiBFcyBpbmNyZWlibGUgY29tbyBhbGd1aWVuIHB1ZWRlIGxsZWdhciB5IGNhbWJpYXJ0ZSBlbCBhbmltbyB0YW4gZmFjaWwgcGVybyB0dSBsbyBoYWNlcyBzaW4gZXNmb3J6YXJ0ZSBuYWRhIHkgZXNvIG1lIGVuY2FudGEgZGUgdGkuIE1lIHF1ZWRvIGVtYm9iYWRvIGVzY3VjaGFuZG90ZSBoYWJsYXIgZGUgY3VhbHF1aWVyIGNvc2EsIHBvcnF1ZSB0cmFuc21pdGVzIHVuYSB0cmFucXVpbGlkYWQgcXVlIG1lIGhhY2Ugc2VudGlyIG11eSBiaWVuIGN1YW5kbyBlc3RhbW9zIGp1bnRvcy4gRXMgaW5jcmVpYmxlIHNlbnRpciBlc2EgZW1vY2lvbiBkZSBzYWJlciBxdWUgYXBlbmFzIGVzdGFtb3MgZXNjcmliaWVuZG8gbGEgcHJpbWVyYSBwYWdpbmEgZGUgdW5hIGhpc3RvcmlhIHF1ZSBwcm9tZXRlIHNlciBtdXkgbGFyZ2EuCk1lIGd1c3RhIG11Y2hvIGlyIGRlc2N1YnJpZW5kbyBjb3NhcyBudWV2YXMgc29icmUgdGkgY2FkYSBkaWEsIGRlc2RlIHR1cyBndXN0b3MgbWFzIGxvY29zIGhhc3RhIGVzYSBmb3JtYSBkZSB2ZXIgbGEgdmlkYS4gTWUgaGFjZXMgc2VudGlyIG11eSBjb21vZG8gc2llbmRvIHlvIG1pc21vIHkgZXNvIG5vIHNlIGVuY3VlbnRyYSB0b2RvcyBsb3MgZGlhcywgcG9yIGVzbyB2YWxvcm8gdGFudG8gcXVlIGhheWFtb3MgY29pbmNpZGlkbyBleGFjdGFtZW50ZSBhaG9yYSBlbiBlc3RlIG1vbWVudG8uCkdyYWNpYXMgcG9yIGRlY2lyIHF1ZSBzaSBhcXVlbCBtYXJ0ZXMgMjcgeSBncmFjaWFzIHBvciBkZWphcm1lIGNvbm9jZXJ0ZSwgcG9yIGVzYSBlbmVyZ2lhIHRhbiBwZXJmZWN0YSBxdWUgdGllbmVzIHF1ZSBtZSBhdHJhcG8gZGVzZGUgZWwgcHJpbWVyIG1vbWVudG8gZW4gcXVlIGhhYmxhbW9zLiBRdWl6YXMgZXN0ZSBzZWEgbnVlc3RybyBwcmltZXIgMTQgZGUgZmVicmVybyBwZXJvIGxvIHF1ZSBtYXMgbWUgZW1vY2lvbmEgbm8gZXMgc29sbyBjZWxlYnJhciBlbCBkaWEgZGUgaG95LCBzaW5vIGltYWdpbmFyIHRvZG9zIGxvcyBtb21lbnRvcyB5IGxhcyBjaXRhcyBxdWUgbm9zIGZhbHRhbiBwb3Igdml2aXIganVudG9zLiBRdWllcm8gcXVlIHNlcGFzIHF1ZSBtZSBlbmNhbnRhIGNvbW8gbWUgaGFjZXMgc2VudGlyIHkgcXVlIGNhZGEgcGxhbiBxdWUgaGFjZW1vcyBzZSB2dWVsdmUgbWkgcGFydGUgZmF2b3JpdGEgZGUgbGEgc2VtYW5hLCBubyBpbXBvcnRhIHNpIGVzIGFsZ28gZ3JhbmRlIG8gc29sbyBlc3RhciBoYWJsYW5kbyBsb3MgZG9zLiBObyBuZWNlc2l0byBxdWUgcGFzZSB1biBhw7FvIGVudGVybyBwYXJhIHNhYmVyIHF1ZSBlcmVzIGFsZ3VpZW4gbXV5IGVzcGVjaWFsIHBhcmEgbWksIHBvcnF1ZSBtZSBzaXJ2aWVyYW4gZXN0YXMgZG9zIHNlbWFuYXMgcGFyYSBkYXJtZSBjdWVudGEgZGUgcXVlIHF1aWVybyBjdWlkYXIgZXN0byBxdWUgdGVuZW1vcyBjb24gdG9kbyBtaSBjb3Jhem9uLgpFcmVzIG1pIG1lam9yIHNvcnByZXNhIGRlIGVzdGUgMjAyNiB5IG1lIGhhY2UgbXV5IGZlbGl6IHBhc2FyIGVzdGUgZGlhIGNvbnRpZ28gc2llbmRvIG1pIG5vdmlhLiBUZSBxdWllcm8gbXVjaGlzaW1vLg==";
+
+        var fechaObjetivo = new Date("February 14, 2026 00:00:00");
+
+        var tiempoHastaQueSalgaElBoton = 18000; 
+        
+        var buttonUnlocked = false;
+        var timerIniciado = false;
+
+        var vigilanteDeAnimacion = setInterval(function() {
+            if ($("#code").is(":visible") && !timerIniciado) {
+                timerIniciado = true;
+                clearInterval(vigilanteDeAnimacion);
+                
+                setTimeout(function() {
+                    $("#valentine-btn-container").fadeIn(1000, function(){
+                        iniciarLlenadoDelBoton();
+                    });
+                }, tiempoHastaQueSalgaElBoton);
+            }
+        }, 500);
+
+        function iniciarLlenadoDelBoton() {
+            var canvas = document.getElementById("btn-canvas");
+            var ctx = canvas.getContext("2d");
+            var width = canvas.width;
+            var height = canvas.height;
+            var rectBtn = canvas.getBoundingClientRect(); 
+
+            var treeX = window.innerWidth * 0.70;
+            var treeY = window.innerHeight * 0.40;
+
+            var colores = [
+                "rgba(255, 0, 0, 0.8)",   
+                "rgba(255, 99, 71, 0.8)", 
+                "rgba(255, 105, 180, 0.8)",
+                "rgba(220, 20, 60, 0.9)",  
+                "rgba(255, 192, 203, 0.7)" 
+            ];
+
+            var corazonesLanzados = 0;
+            var totalCorazones = 300; 
+
+            var intervalo = setInterval(function() {
+                if (corazonesLanzados >= totalCorazones) {
+                    clearInterval(intervalo);
+                    return;
+                }
+
+                var destX = Math.random() * width;
+                var destY = Math.random() * height;
+                
+                var scale = 0.3 + Math.random() * 0.4; 
+                var color = colores[Math.floor(Math.random() * colores.length)];
+                
+                lanzarCorazonVisual(treeX, treeY, rectBtn.left + destX, rectBtn.top + destY, color, scale, function() {
+                    dibujarCorazonMatematico(ctx, destX, destY, scale, color);
+                });
+
+                corazonesLanzados++;
+            }, 30); 
+        }
+
+        function lanzarCorazonVisual(startX, startY, endX, endY, color, scale, onFinish) {
+            var heart = document.createElement("div");
+            heart.innerHTML = "❤"; 
+            heart.className = "flying-heart-particle";
+            heart.style.left = startX + "px";
+            heart.style.top = startY + "px";
+            heart.style.color = color;
+            heart.style.transform = "scale(" + (scale * 2) + ")"; 
+            
+            document.body.appendChild(heart);
+
+            var randomOffset = (Math.random() - 0.5) * 50;
+
+            var anim = heart.animate([
+                { transform: `translate(0, 0) scale(${scale*2})`, opacity: 0 },
+                { transform: `translate(0, 0) scale(${scale*2})`, opacity: 1, offset: 0.1 },
+                { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(${scale})`, opacity: 1 }
+            ], {
+                duration: 2000 + Math.random() * 1000, 
+                easing: 'cubic-bezier(0.25, 1, 0.5, 1)' 
+            });
+
+            anim.onfinish = function() {
+                heart.remove(); 
+                onFinish();     
+            };
+        }
+
+        function dibujarCorazonMatematico(ctx, x, y, scale, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            
+            for (var i = 0; i < Math.PI * 2; i += 0.1) {
+                var tx = 16 * Math.pow(Math.sin(i), 3);
+                var ty = -(13 * Math.cos(i) - 5 * Math.cos(2 * i) - 2 * Math.cos(3 * i) - Math.cos(4 * i));
+                if (i === 0) ctx.moveTo(tx, ty);
+                else ctx.lineTo(tx, ty);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function intentarAbrir() {
+            if (!buttonUnlocked) return; 
+
+            var mensajeFinal = "";
+            try {
+                mensajeFinal = atob(contenidoCarta);
+                mensajeFinal = decodeURIComponent(escape(mensajeFinal));
+            } catch(e) {
+                mensajeFinal = "LILO";
+            }
+
+            document.getElementById("secret-message-area").innerText = mensajeFinal;
+            document.getElementById("letter-overlay").style.display = "flex";
+        }
+
+        function updateTimer() {
+            var now = new Date().getTime();
+            var diff = fechaObjetivo.getTime() - now;
+            var span = document.getElementById("countdown");
+            var wrapper = document.getElementById("btn-wrapper");
+
+            if (diff < 0) {
+                if (!buttonUnlocked) {
+                    buttonUnlocked = true;
+                    wrapper.classList.add("unlocked");
+                    span.parentElement.innerHTML = "¡ABRIR CARTA!";
+                }
+            } else {
+                var d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                var h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                var s = Math.floor((diff % (1000 * 60)) / 1000);
+                span.innerHTML = d + "d " + h + "h " + m + "m " + s + "s";
+            }
+        }
+        
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+</body>
+</html>
